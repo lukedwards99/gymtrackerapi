@@ -9,9 +9,8 @@ router.use(logger)
 router.route("/")
     .get((req, res) => {
         getWorkouts().then(workouts => {
-            
+            res.send(JSON.stringify(workouts))
         })
-        res.send(`Get Workouts`)
     })
 
 

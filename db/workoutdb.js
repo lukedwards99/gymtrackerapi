@@ -13,16 +13,13 @@ const pool = require("./dbconnect")
 
 async function getWorkouts() {
     try {
-        const response = await pool.query("SELECT current_user");
+        const response = await pool.query("SELECT * FROM workout;");
         const { rows } = response;
-        const currentUser = rows[0]['current_user'];
-        console.log(currentUser);  
+        return rows
     } catch (err) {
         console.log(err);
+        return false
     }
-
-    // need to return workouts
-
 }
 
 module.exports.getWorkouts = getWorkouts;
