@@ -1,25 +1,29 @@
-const pool = require("./dbconnect")
-
-// (async () => {
-//     try {
-//         const response = await pool.query("SELECT current_user");    
-//         const {rows} = response;
-//         const currentUser = rows[0]['current_user'];
-//         console.log(currentUser);  // postgres
-//     } catch (err) {
-//         console.log(err);
-//     }
-// })();
+const runQuery = require("./dbconnect")
 
 async function getWorkouts() {
-    try {
-        const response = await pool.query("SELECT * FROM workout;");
-        const { rows } = response;
-        return rows
-    } catch (err) {
-        console.log(err);
-        return false
-    }
+    return await runQuery("SELECT * FROM workout;")
 }
 
-module.exports.getWorkouts = getWorkouts;
+async function getWorkout(id){
+    const sql = `
+        SELECT
+            W.UID AS WorkoutID,
+            W.WORKOUT_TIME,
+            WES.EXERCISE_NAME,
+            WES.REPS,
+            WES.DIFFICULTY_SCORE,
+            WES.PERCEIVED_STIMULATION_SCORE,
+            E.EXERCISE_TYPE_ID,
+            E.MANUFACTURER,
+            E.COMMENTS
+        FROM
+            WORKOUT W
+        JOIN WORKOUTEXERCISESELECTION WES ON W.UID = WES.WORKOUT_ID
+        JOIN EXERCISE E ON WES.EXERCISE_NAME = E.EXERCISE_NAME
+        WHERE
+            W.UID = $1;
+    `
+    return await runQuery(sql, [id])
+}
+
+module.exports = {getWorkouts, getWorkout};

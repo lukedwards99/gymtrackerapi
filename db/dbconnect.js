@@ -14,4 +14,15 @@ const pool = new Pool({
     port: process.env.PORT
 })
 
-module.exports = pool
+async function runQuery(query, params) {
+    try {
+        const response = await pool.query(query, params);
+        const { rows } = response;
+        return rows
+    } catch (err) {
+        console.log(err);
+        return false
+    }
+}
+
+module.exports = runQuery
