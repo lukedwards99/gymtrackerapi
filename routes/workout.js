@@ -12,10 +12,13 @@ router.route("/")
             res.json(JSON.stringify(workouts))
         })
     })
+    .put((req, res) => {
+        res.send("ok")
+    })
 router.route("/:id")
     .get((req, res) => {
         getWorkout(req.params.id).then(workout => {
-            res.json(JSON.stringify(workout))
+            res.json(workout)
         })
     })
     
