@@ -38,8 +38,9 @@ function reduceWorkouts(data){
             manufacturer: exercise.manufacturer,
             reps: exercise.reps,
             difficultyScore: exercise.difficulty_score,
-            simulationScore: exercise.perceived_simulation_score,
-            comments: exercise.comments
+            simulationScore: exercise.perceived_stimulation_score,
+            comments: exercise.comments,
+            uid: exercise.uid
         })
     }
     return workout

@@ -6,6 +6,7 @@ module.exports.CONSTANTS = {
             W.WORKOUT_TITLE,
             WT.DAY_NAME,
             EC.CATEGORY_NAME,
+            WES.UID,
             WES.REPS,
             WES.DIFFICULTY_SCORE,
             WES.PERCEIVED_STIMULATION_SCORE,
@@ -28,4 +29,10 @@ module.exports.CONSTANTS = {
     
     insertWorkoutType_sql: 
         `INSERT INTO WORKOUTTYPE (DAY_NAME) VALUES ($1);`,
+
+    insertExercise_sql:
+        `INSERT INTO WORKOUTEXERCISESELECTION (WORKOUT_ID, EXERCISE_NAME_ID, REPS, DIFFICULTY_SCORE, PERCEIVED_STIMULATION_SCORE) VALUES ($1, $2, $3,$4, $5);`,
+
+    removeWorkoutExercise_sql:
+    `DELETE FROM WORKOUTEXERCISESELECTION WHERE UID = $1`,
 }

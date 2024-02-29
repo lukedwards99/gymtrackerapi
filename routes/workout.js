@@ -3,8 +3,6 @@ const router = express.Router()
 const logger = require("../common/logging")
 const {getWorkouts, getWorkout, insertWorkout, getWorkoutTypes, putWorkoutType} = require("../db/workoutdb")
 
-router.use(logger)
-
 router.route("/type")
     .get((req, res) => {
         getWorkoutTypes().then(workoutsTypes => {
