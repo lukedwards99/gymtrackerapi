@@ -1,34 +1,21 @@
 const runQuery = require("./dbconnect")
+const {CONSTANTS} = require("../common/constants")
 
 async function getWorkouts() {
     return await runQuery("SELECT * FROM workout;")
 }
 
 async function getWorkout(id) {
-    const sql = `
-    SELECT
-        W.UID AS WorkoutID,
-        W.WORKOUT_TIME,
-        W.WORKOUT_TITLE,
-        WT.DAY_NAME,
-        EC.CATEGORY_NAME,
-        WES.REPS,
-        WES.DIFFICULTY_SCORE,
-        WES.PERCEIVED_STIMULATION_SCORE,
-        E.MANUFACTURER,
-        E.COMMENTS
-    FROM
-        WORKOUT W
-    JOIN WORKOUTEXERCISESELECTION WES ON W.UID = WES.WORKOUT_ID
-    JOIN EXERCISE E ON WES.EXERCISE_NAME_ID = E.UID
-    JOIN WORKOUTTYPE WT ON W.WORKOUTTYPE_ID = WT.UID
-    JOIN EXERCISECATEGORY EC ON WES.EXERCISE_NAME_ID = EC.UID
-    WHERE
-        W.UID = $1;
-    `
-
-    const data = await runQuery(sql, [id])
+    const data = await runQuery(CONSTANTS.getWorkout_sql, [id])
     return reduceWorkouts(data)
+}
+
+async function getWorkoutTypes(id) {
+    return await runQuery(CONSTANTS.getWorkoutTypes_sql)
+}
+
+async function putWorkoutType(name){
+    return await runQuery(CONSTANTS.insertWorkoutType_sql, [name])
 }
 
 function reduceWorkouts(data){
@@ -58,4 +45,8 @@ function reduceWorkouts(data){
     return workout
 }
 
-module.exports = { getWorkouts, getWorkout };
+async function insertWorkout(time, title, typeId){
+    return await runQuery(CONSTANTS.insertWorkout_sql, [time, title, typeId])
+}
+
+module.exports = { getWorkouts, getWorkout, insertWorkout, getWorkoutTypes, putWorkoutType };
