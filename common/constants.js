@@ -44,4 +44,7 @@ module.exports.CONSTANTS = {
 
     deleteExerciseCategory_sql:
         `DELETE FROM EXERCISECATEGORY WHERE UID = $1;`,
+
+    deleteWorkoutType_sql:
+        `DELETE FROM WORKOUTTYPE WHERE UID = $1;`
 }

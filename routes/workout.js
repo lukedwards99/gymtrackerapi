@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const logger = require("../common/logging")
-const {getWorkouts, getWorkout, insertWorkout, getWorkoutTypes, putWorkoutType} = require("../db/workoutdb")
+const {getWorkouts, getWorkout, insertWorkout, getWorkoutTypes, putWorkoutType, deleteWorkoutType} = require("../db/workoutdb")
 
 router.route("/type")
     .get((req, res) => {
@@ -10,6 +10,10 @@ router.route("/type")
         })
     }).put((req, res) => {
         putWorkoutType(req.body.name).then(success => {
+            res.json({success: success ? true : false})
+        })
+    }).delete((req, res) => {
+        deleteWorkoutType(req.body.workout_type_id).then(success => {
             res.json({success: success ? true : false})
         })
     })

@@ -50,4 +50,8 @@ async function insertWorkout(time, title, typeId){
     return await runQuery(CONSTANTS.insertWorkout_sql, [time, title, typeId])
 }
 
-module.exports = { getWorkouts, getWorkout, insertWorkout, getWorkoutTypes, putWorkoutType };
+async function deleteWorkoutType(uid){
+    return await runQuery(CONSTANTS.deleteWorkoutType_sql, [uid])
+}
+
+module.exports = { getWorkouts, getWorkout, insertWorkout, getWorkoutTypes, putWorkoutType, deleteWorkoutType };
