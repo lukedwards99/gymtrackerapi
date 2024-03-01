@@ -34,5 +34,14 @@ module.exports.CONSTANTS = {
         `INSERT INTO WORKOUTEXERCISESELECTION (WORKOUT_ID, EXERCISE_NAME_ID, REPS, DIFFICULTY_SCORE, PERCEIVED_STIMULATION_SCORE) VALUES ($1, $2, $3,$4, $5);`,
 
     removeWorkoutExercise_sql:
-    `DELETE FROM WORKOUTEXERCISESELECTION WHERE UID = $1`,
+        `DELETE FROM WORKOUTEXERCISESELECTION WHERE UID = $1`,
+
+    getExerciseCategory_sql:
+        `SELECT * FROM exercisecategory`,
+
+    putExerciseCategory_sql:
+        `INSERT INTO EXERCISECATEGORY (CATEGORY_NAME) VALUES ($1);`,
+
+    deleteExerciseCategory_sql:
+        `DELETE FROM EXERCISECATEGORY WHERE UID = $1;`,
 }
