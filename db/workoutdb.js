@@ -10,12 +10,27 @@ async function getWorkout(id) {
     return reduceWorkouts(data)
 }
 
-async function getWorkoutTypes(id) {
+async function getWorkoutTypes() {
     return await runQuery(CONSTANTS.getWorkoutTypes_sql)
 }
 
+async function getWorkoutTypesActive(id) {
+    return await runQuery(CONSTANTS.getWorkoutTypesActive_sql)
+}
+
 async function putWorkoutType(name){
-    return await runQuery(CONSTANTS.insertWorkoutType_sql, [name])
+    const workoutTypes = await getWorkoutTypes()
+    for(const type of workoutTypes){
+        if(type.day_name === name){
+            if(type.logical_delete == true){
+                const success = runQuery(CONSTANTS.logicalUnDeleteWorkoutType_sql, [type.uid])
+                return {success: success ? true : false, message: "Logical insert"}
+            }
+            return {success: false, message: "This type already exists"}
+        }    
+    }
+    const success = await runQuery(CONSTANTS.insertWorkoutType_sql, [name])
+    return {success: success ? true : false}
 }
 
 function reduceWorkouts(data){
@@ -51,7 +66,11 @@ async function insertWorkout(time, title, typeId){
 }
 
 async function deleteWorkoutType(uid){
-    return await runQuery(CONSTANTS.deleteWorkoutType_sql, [uid])
+    return await runQuery(CONSTANTS.logicalDeleteWorkoutType_sql, [uid])
 }
 
-module.exports = { getWorkouts, getWorkout, insertWorkout, getWorkoutTypes, putWorkoutType, deleteWorkoutType };
+async function deleteWorkout(uid){
+    return await runQuery(CONSTANTS.deleteWorkout_sql, [uid])
+}
+
+module.exports = { getWorkouts, getWorkout, insertWorkout, getWorkoutTypes, putWorkoutType, deleteWorkoutType, deleteWorkout, getWorkoutTypesActive };

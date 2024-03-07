@@ -25,7 +25,10 @@ module.exports.CONSTANTS = {
         `INSERT INTO WORKOUT (WORKOUT_TIME, WORKOUT_TITLE, WORKOUTTYPE_ID) VALUES ($1, $2, $3);`,
     
     getWorkoutTypes_sql:
-        `SELECT uid, day_name FROM workouttype;`,
+        `SELECT uid, day_name, logical_delete FROM workouttype;`,
+
+    getWorkoutTypesActive_sql:
+        `SELECT uid, day_name FROM workouttype WHERE logical_delete = false;`,
     
     insertWorkoutType_sql: 
         `INSERT INTO WORKOUTTYPE (DAY_NAME) VALUES ($1);`,
@@ -45,6 +48,12 @@ module.exports.CONSTANTS = {
     deleteExerciseCategory_sql:
         `DELETE FROM EXERCISECATEGORY WHERE UID = $1;`,
 
-    deleteWorkoutType_sql:
-        `DELETE FROM WORKOUTTYPE WHERE UID = $1;`
+    logicalDeleteWorkoutType_sql:
+        `UPDATE workouttype SET logical_delete = true where uid = $1`,
+
+    logicalUnDeleteWorkoutType_sql:
+        `UPDATE workouttype SET logical_delete = false where uid = $1`,
+
+    deleteWorkout_sql:
+        `DELETE FROM WORKOUT WHERE UID = $1;`
 }
