@@ -19,6 +19,10 @@ async function getWorkoutTypesActive(id) {
 }
 
 async function putWorkoutType(name){
+    if (name.trim().length === 0){
+        return {success: false, message: "Name cannot be empty"}
+    }
+    console.log("adding workout day: " + name)
     const workoutTypes = await getWorkoutTypes()
     for(const type of workoutTypes){
         if(type.day_name === name){
