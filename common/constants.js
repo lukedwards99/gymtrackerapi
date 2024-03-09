@@ -1,6 +1,19 @@
 module.exports.CONSTANTS = {
     getWorkout_sql:
         `SELECT
+            w.uid as workout_id,
+            w.workout_time,
+            w.workout_title,
+            wt.uid as workout_type_id,
+            wt.day_name,
+            wt.logical_delete as workout_type_deleted 	
+        FROM
+            WORKOUT W
+        JOIN WORKOUTTYPE WT ON W.WORKOUTTYPE_ID = WT.UID
+        WHERE
+            W.UID = $1;`,
+    getWorkoutandExercise_sql:
+        `SELECT
             W.UID AS WorkoutID,
             W.WORKOUT_TIME,
             W.WORKOUT_TITLE,

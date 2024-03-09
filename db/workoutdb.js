@@ -6,8 +6,9 @@ async function getWorkouts() {
 }
 
 async function getWorkout(id) {
-    const data = await runQuery(CONSTANTS.getWorkout_sql, [id])
-    return reduceWorkouts(data)
+    const excerciseData = await runQuery(CONSTANTS.getWorkoutandExercise_sql, [id])
+    const workoutData = await runQuery(CONSTANTS.getWorkout_sql, [id])
+    return reduceWorkouts(excerciseData, workoutData)
 }
 
 async function getWorkoutTypes() {
@@ -37,21 +38,22 @@ async function putWorkoutType(name){
     return {success: success ? true : false}
 }
 
-function reduceWorkouts(data){
-    if(data == null || data.length === 0){
-        return {}
+function reduceWorkouts(exerciseData, workoutData){
+    if(workoutData === null || workoutData.length === 0){
+        return {success: false, msg: "No workout found"}
     }
 
     let workout = {
-        id: data[0].workoutid,
-        time: data[0].workout_time,
-        title: data[0].workout_title,
-        dayName: data[0].day_name,
+        id: workoutData[0].workout_id,
+        time: workoutData[0].workout_time,
+        title: workoutData[0].workout_title,
+        dayName: workoutData[0].day_name,
+        dayNameID: workoutData[0].workout_type_id,
         exercises: []
     }
 
-    for (let i = 0; i < data.length; i++) {
-        const exercise = data[i];
+    for (let i = 0; i < exerciseData.length; i++) {
+        const exercise = exerciseData[i];
         workout.exercises.push({
             name: exercise.category_name,
             manufacturer: exercise.manufacturer,
