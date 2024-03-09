@@ -54,6 +54,9 @@ module.exports.CONSTANTS = {
 
     getExerciseCategory_sql:
         `SELECT * FROM exercisecategory`,
+    
+    getExerciseCategoryActive_sql:
+        `SELECT uid, category_name FROM exercisecategory where logical_delete = false`,
 
     putExerciseCategory_sql:
         `INSERT INTO EXERCISECATEGORY (CATEGORY_NAME) VALUES ($1);`,
@@ -66,6 +69,12 @@ module.exports.CONSTANTS = {
 
     logicalUnDeleteWorkoutType_sql:
         `UPDATE workouttype SET logical_delete = false where uid = $1`,
+
+    logicalUnDeleteExerciseCategory_sql:
+        `UPDATE EXERCISECATEGORY SET logical_delete = false where uid = $1`,
+
+    logicalDeleteExerciseCategory_sql:
+        `UPDATE EXERCISECATEGORY SET logical_delete = true where uid = $1`,
 
     deleteWorkout_sql:
         `DELETE FROM WORKOUT WHERE UID = $1;`
