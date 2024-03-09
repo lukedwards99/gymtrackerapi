@@ -49,6 +49,7 @@ function reduceWorkouts(exerciseData, workoutData){
         title: workoutData[0].workout_title,
         dayName: workoutData[0].day_name,
         dayNameID: workoutData[0].workout_type_id,
+        dayNumber: workoutData[0].day_number,
         exercises: []
     }
 
@@ -60,6 +61,7 @@ function reduceWorkouts(exerciseData, workoutData){
             reps: exercise.reps,
             difficultyScore: exercise.difficulty_score,
             simulationScore: exercise.perceived_stimulation_score,
+            order: exercise.workout_order,
             comments: exercise.comments,
             uid: exercise.uid
         })
@@ -67,8 +69,8 @@ function reduceWorkouts(exerciseData, workoutData){
     return workout
 }
 
-async function insertWorkout(time, title, typeId){
-    return await runQuery(CONSTANTS.insertWorkout_sql, [time, title, typeId])
+async function insertWorkout(time, title, typeId, dayNumber){
+    return await runQuery(CONSTANTS.insertWorkout_sql, [time, title, typeId, dayNumber])
 }
 
 async function deleteWorkoutType(uid){

@@ -4,6 +4,7 @@ module.exports.CONSTANTS = {
             w.uid as workout_id,
             w.workout_time,
             w.workout_title,
+            w.day_number,
             wt.uid as workout_type_id,
             wt.day_name,
             wt.logical_delete as workout_type_deleted 	
@@ -17,12 +18,14 @@ module.exports.CONSTANTS = {
             W.UID AS WorkoutID,
             W.WORKOUT_TIME,
             W.WORKOUT_TITLE,
+            w.day_number,
             WT.DAY_NAME,
             EC.CATEGORY_NAME,
             WES.UID,
             WES.REPS,
             WES.DIFFICULTY_SCORE,
             WES.PERCEIVED_STIMULATION_SCORE,
+            WES.workout_order,
             E.MANUFACTURER,
             E.COMMENTS
         FROM
@@ -35,7 +38,7 @@ module.exports.CONSTANTS = {
             W.UID = $1;`,
 
     insertWorkout_sql:
-        `INSERT INTO WORKOUT (WORKOUT_TIME, WORKOUT_TITLE, WORKOUTTYPE_ID) VALUES ($1, $2, $3);`,
+        `INSERT INTO WORKOUT (WORKOUT_TIME, WORKOUT_TITLE, WORKOUTTYPE_ID, day_number) VALUES ($1, $2, $3, $4);`,
     
     getWorkoutTypes_sql:
         `SELECT uid, day_name, logical_delete FROM workouttype;`,
@@ -47,7 +50,7 @@ module.exports.CONSTANTS = {
         `INSERT INTO WORKOUTTYPE (DAY_NAME) VALUES ($1);`,
 
     insertExercise_sql:
-        `INSERT INTO WORKOUTEXERCISESELECTION (WORKOUT_ID, EXERCISE_NAME_ID, REPS, DIFFICULTY_SCORE, PERCEIVED_STIMULATION_SCORE) VALUES ($1, $2, $3,$4, $5);`,
+        `INSERT INTO WORKOUTEXERCISESELECTION (WORKOUT_ID, EXERCISE_NAME_ID, REPS, DIFFICULTY_SCORE, PERCEIVED_STIMULATION_SCORE, workout_order) VALUES ($1, $2, $3,$4, $5, $6);`,
 
     removeWorkoutExercise_sql:
         `DELETE FROM WORKOUTEXERCISESELECTION WHERE UID = $1`,

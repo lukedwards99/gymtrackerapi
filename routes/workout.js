@@ -15,11 +15,13 @@ router.route("/type")
         getWorkoutTypes().then(workoutsTypes => {
             res.json(workoutsTypes)
         })
-    }).put((req, res) => {
+    })
+    .put((req, res) => {
         putWorkoutType(req.body.name).then(returnObject => {
             res.json(returnObject)
         })
-    }).delete((req, res) => {
+    })
+    .delete((req, res) => {
         deleteWorkoutType(req.body.workout_type_id).then(success => {
             res.json({success: success ? true : false})
         })
@@ -34,10 +36,11 @@ router.route("/")
     })
     .put((req, res) => {
         const w = req.body
-        insertWorkout(w.workout_time, w.workout_title, w.workouttype_id).then(success => {
+        insertWorkout(w.workout_time, w.workout_title, w.workouttype_id, w.day_number).then(success => {
             res.json({success: success ? true : false})
         })
-    }).delete((req, res) => {
+    })
+    .delete((req, res) => {
         deleteWorkout(req.body.workout_id).then(success => {
             res.json({success: success ? true : false})
         })
