@@ -131,7 +131,6 @@ async function orderExercises(exercise_id){
     exercises.sort((a, b) => a.order - b.order)
     
     for(let i = 0; i < exercises.length; i++){
-        console.log(JSON.stringify(exercises[i]))
         if (exercises[i].order !== i ){
             const success = await runQuery("UPDATE workoutexerciseselection SET workout_order = $1 where uid = $2;", [i, exercises[i].workout_selection_id])
             if(!success){

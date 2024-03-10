@@ -25,13 +25,10 @@ module.exports.CONSTANTS = {
             WES.REPS,
             WES.DIFFICULTY_SCORE,
             WES.PERCEIVED_STIMULATION_SCORE,
-            WES.workout_order,
-            E.MANUFACTURER,
-            E.COMMENTS
+            WES.workout_order
         FROM
             WORKOUT W
         JOIN WORKOUTEXERCISESELECTION WES ON W.UID = WES.WORKOUT_ID
-        JOIN EXERCISE E ON WES.EXERCISE_NAME_ID = E.UID
         JOIN WORKOUTTYPE WT ON W.WORKOUTTYPE_ID = WT.UID
         JOIN EXERCISECATEGORY EC ON WES.EXERCISE_NAME_ID = EC.UID
         WHERE
