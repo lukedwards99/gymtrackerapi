@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const logger = require("../common/logging")
-const {getWorkouts, getWorkout, insertWorkout, getWorkoutTypes, putWorkoutType, deleteWorkoutType, deleteWorkout, getWorkoutTypesActive} = require("../db/workoutdb")
+const {getWorkouts, getWorkout, insertWorkout, getWorkoutTypes, putWorkoutType, deleteWorkoutType, deleteWorkout, getWorkoutTypesActive, patchWorkout } = require("../db/workoutdb")
 
 router.route('/type/active')
     .get((req, res) => {
@@ -50,6 +50,12 @@ router.route("/:id")
     .get((req, res) => {
         getWorkout(req.params.id).then(workout => {
             res.json(workout)
+        })
+    })
+    .patch((req, res) => {
+        const w = req.body
+        patchWorkout(req.params.id, w.workout_time, w.workout_title, w.workouttype_id, w.day_number).then(message => {
+            res.json(message)
         })
     })
 
