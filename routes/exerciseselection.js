@@ -11,8 +11,8 @@ router.route("/up")
 
 router.route("/down")
     .post((req, res) => {
-        moveExerciseDown(body.exercise_selection_id).then(success => {
-            res.json({success: success ? true : false})
+        moveExerciseDown(req.body.exercise_selection_id).then(resMessage => {
+            res.json(resMessage)
         })
     })
 

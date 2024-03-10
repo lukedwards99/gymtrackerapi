@@ -99,18 +99,18 @@ async function moveExerciseDown(exercise_id){
 
     for(let i = 0; i < data.exercises.length; i++){
         const exercise = data.exercises[i]
-        if (exercise.workout_selection_id === exercise_id){
+        if (exercise.workout_selection_id == exercise_id){
             if (i === data.exercises.length - 1) {
                 return {success: true, message:"already last exercise"}
             }
             //switch entries
             //first move entry down
-            let success = await runQuery("UPDATE workoutexerciseselection SET workout_order = $1 where uid = $2;", [i + 1], exercise.workout_selection_id)
+            let success = await runQuery("UPDATE workoutexerciseselection SET workout_order = $1 where uid = $2;", [i + 1, exercise.workout_selection_id])
             if (!success){
                 return {success: false, message: "cant update exercise selection: " + exercise.workout_selection_id}
             }
             //move second entry up
-            success = await runQuery("UPDATE workoutexerciseselection SET workout_order = $1 where uid = $2;", [i - 1], data.exercises[i + 1].workout_selection_id)
+            success = await runQuery("UPDATE workoutexerciseselection SET workout_order = $1 where uid = $2;", [i - 1, data.exercises[i + 1].workout_selection_id])
             if (!success){
                 return {success: false, message: "cant update exercise selection: " + exercise.workout_selection_id}
             }
