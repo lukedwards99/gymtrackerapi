@@ -13,6 +13,8 @@ module.exports.CONSTANTS = {
         JOIN WORKOUTTYPE WT ON W.WORKOUTTYPE_ID = WT.UID
         WHERE
             W.UID = $1;`,
+        
+    //todo redo this sql
     getWorkoutandExercise_sql:
         `SELECT
             W.UID AS WorkoutID,
@@ -22,9 +24,6 @@ module.exports.CONSTANTS = {
             WT.DAY_NAME,
             EC.CATEGORY_NAME,
             WES.UID,
-            WES.REPS,
-            WES.DIFFICULTY_SCORE,
-            WES.PERCEIVED_STIMULATION_SCORE,
             WES.workout_order
         FROM
             WORKOUT W
@@ -47,7 +46,7 @@ module.exports.CONSTANTS = {
         `INSERT INTO WORKOUTTYPE (DAY_NAME) VALUES ($1);`,
 
     insertExercise_sql:
-        `INSERT INTO WORKOUTEXERCISESELECTION (WORKOUT_ID, EXERCISE_NAME_ID, REPS, DIFFICULTY_SCORE, PERCEIVED_STIMULATION_SCORE, workout_order) VALUES ($1, $2, $3,$4, $5, $6);`,
+        `INSERT INTO WORKOUTEXERCISESELECTION (WORKOUT_ID, EXERCISE_NAME_ID, index_order) VALUES ($1, $2, $3);`,
 
     removeWorkoutExercise_sql:
         `DELETE FROM WORKOUTEXERCISESELECTION WHERE UID = $1`,
