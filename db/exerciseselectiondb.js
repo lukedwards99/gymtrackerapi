@@ -1,9 +1,10 @@
 const runQuery = require("./dbconnect")
 const {CONSTANTS} = require("../common/constants")
+const {orderTable} = require("../common/util")
 
-async function insertExercises(workoutID, exerciseNameID, reps, difficulty, stimulation, order){
+async function insertExercises(workoutID, exerciseNameID, order){
     debugger
-    return await runQuery(CONSTANTS.insertExercise_sql, [workoutID, exerciseNameID, reps, difficulty, stimulation, order])
+    return await runQuery(CONSTANTS.insertExercise_sql, [workoutID, exerciseNameID, order])
 }
 
 async function removeExercise(workoutExerciseID){
@@ -14,9 +15,8 @@ async function getExercisesForWorkout(workoutID){
     const exercises = 
         await runQuery(`SELECT W.uid as workout_id, WES.uid as workout_selection_id, 
             WES.exercise_name_id AS category_id, 
-            WES.workout_order AS order,
-            EC.category_name, WES.reps,
-            WES.difficulty_score, WES.perceived_stimulation_score
+            WES.index_order AS order,
+            EC.category_name
             FROM workout W
             JOIN workoutexerciseselection WES on WES.workout_id = W.uid
             JOIN exercisecategory EC on EC.uid = WES.exercise_name_id
@@ -41,9 +41,8 @@ async function getExercisesForWorkoutForExerciseSelectionID(exercise_selection_i
     const exercises = 
         await runQuery(`SELECT W.uid as workout_id, WES.uid as workout_selection_id, 
             WES.exercise_name_id AS category_id, 
-            WES.workout_order AS order,
-            EC.category_name, WES.reps,
-            WES.difficulty_score, WES.perceived_stimulation_score
+            WES.index_order AS order,
+            EC.category_name
             FROM workout W
             JOIN workoutexerciseselection WES on WES.workout_id = W.uid
             JOIN exercisecategory EC on EC.uid = WES.exercise_name_id
@@ -74,12 +73,12 @@ async function moveExerciseUp(exercise_selection_id){
             }
             //switch entries
             //first move entry up
-            let success = await runQuery("UPDATE workoutexerciseselection SET workout_order = $1 where uid = $2;", [i - 1, exercise.workout_selection_id])
+            let success = await runQuery("UPDATE workoutexerciseselection SET index_order = $1 where uid = $2;", [i - 1, exercise.workout_selection_id])
             if (!success){
                 return {success: false, message: "cant update exercise selection: " + exercise.workout_selection_id}
             }
             //move second entry down
-            success = await runQuery("UPDATE workoutexerciseselection SET workout_order = $1 where uid = $2;", [i, data.exercises[i - 1].workout_selection_id])
+            success = await runQuery("UPDATE workoutexerciseselection SET index_order = $1 where uid = $2;", [i, data.exercises[i - 1].workout_selection_id])
             if (!success){
                 return {success: false, message: "cant update exercise selection: " + exercise.workout_selection_id}
             }
@@ -97,42 +96,47 @@ async function moveExerciseDown(exercise_id){
         return data //return error object if there was some failure
     }
 
-    for(let i = 0; i < data.exercises.length; i++){
+    for(let i = 0; i < data.exercises.length - 1; i++){
         const exercise = data.exercises[i]
         if (exercise.workout_selection_id == exercise_id){
-            if (i === data.exercises.length - 1) {
-                return {success: true, message:"already last exercise"}
-            }
+            // if (exercise.index_order === data.exercises.length - 1) {
+            //     return {success: true, message:"already last exercise"}
+            // }
             //switch entries
             //first move entry down
-            let success = await runQuery("UPDATE workoutexerciseselection SET workout_order = $1 where uid = $2;", [i + 1, exercise.workout_selection_id])
+            let success = await runQuery("UPDATE workoutexerciseselection SET index_order = $1 where uid = $2;", [i + 1, exercise.workout_selection_id])
             if (!success){
                 return {success: false, message: "cant update exercise selection: " + exercise.workout_selection_id}
             }
             //move second entry up
-            success = await runQuery("UPDATE workoutexerciseselection SET workout_order = $1 where uid = $2;", [i - 1, data.exercises[i + 1].workout_selection_id])
+            success = await runQuery("UPDATE workoutexerciseselection SET index_order = $1 where uid = $2;", [i, data.exercises[i + 1].workout_selection_id])
             if (!success){
                 return {success: false, message: "cant update exercise selection: " + exercise.workout_selection_id}
             }
             return {success: true}
         }
     }
-    
-    return {success: false, message: "invalid exercise id"}
+    return {success: true, message:"already last exercise"}
+   
+    // return {success: false, message: "invalid exercise id"}
 }
 
 async function orderExercises(exercise_id){
     let exercises = await getExercisesForWorkoutForExerciseSelectionID(exercise_id)
 
+    if (exercises == false){
+        return {success: false, message: "invalid exercise selection id"}
+    }
+
     if(exercises.error){
         return exercises //return  error object if needed
     }
-    // console.log("exercises 2: " + JSON.stringify(exercises))
+    // console.log("exercises: " + JSON.stringify(exercises))
     exercises.sort((a, b) => a.order - b.order)
     
     for(let i = 0; i < exercises.length; i++){
         if (exercises[i].order !== i ){
-            const success = await runQuery("UPDATE workoutexerciseselection SET workout_order = $1 where uid = $2;", [i, exercises[i].workout_selection_id])
+            const success = await runQuery("UPDATE workoutexerciseselection SET INDEX_order = $1 where uid = $2;", [i, exercises[i].workout_selection_id])
             if(!success){
                 console.log("Error running ordering query")
                 return {success: false, message: "Order Update query failed"}
@@ -140,6 +144,11 @@ async function orderExercises(exercise_id){
             exercises[i].order = i 
         }
     }
+    // const orderResult = await orderTable(exercises, 'workoutexerciseselection', runQuery)
+    // if (!orderResult.success){
+    //     return orderResult;
+    // }
+    // return {success: orderResult.success, exercises: orderResult.array}
     return {success: true, exercises: exercises}
 }
 

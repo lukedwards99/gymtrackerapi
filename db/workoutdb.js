@@ -70,8 +70,11 @@ function reduceWorkouts(exerciseData, workoutData){
 }
 
 async function insertWorkout(time, title, typeId, dayNumber){
-    if (time === null || time == ""){
+    if (time === null || time.trim() == ""){
         time = (new Date(Date.now())).toISOString()
+    }
+    if(typeof dayNumber != "number"){
+        dayNumber = 0
     }
     return await runQuery(CONSTANTS.insertWorkout_sql, [time, title, typeId, dayNumber])
 }
@@ -85,7 +88,12 @@ async function deleteWorkout(uid){
 }
 
 async function patchWorkout(uid, time, title, typeId, dayNumber){
-    debugger
+    if (time.trim() == ""){
+        time = null
+    }
+    if(dayNumber == null){
+        dayNumber = 0
+    }
     const success = await runQuery(`UPDATE workout SET workout_title = $1, workout_time = $2, workouttype_id = $3, day_number = $4 WHERE uid = $5;`, [title, time, typeId, dayNumber, uid])
     if(!success){
         console.error("Error updating workout with id: " + uid)

@@ -25,8 +25,7 @@ router.route("/:id")
     })
     .put((req, res) => {
         body = req.body
-        insertExercises(req.params.id, body.exercise_name_id, body.reps, 
-                        body.difficulty, body.stimulation, body.order)
+        insertExercises(req.params.id, body.exercise_name_id, body.order)
         .then(success => {
             res.json({success: success ? true : false})
         })
@@ -40,8 +39,4 @@ router.route("/")
             res.json({success: success ? true : false})
         })
     })
-
-
-
-
 module.exports = router
