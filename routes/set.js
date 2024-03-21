@@ -1,20 +1,20 @@
 const express = require("express")
 const router = express.Router()
-const { getSetsForExercise, insertSet, deleteSet} = require("../db/setdb.js")
+const { getSetsForExercise, insertSet, deleteSet, moveSetUp, moveSetDown } = require("../db/setdb.js")
 
-// router.route("/up")
-//     .post((req, res) => {
-//         moveExerciseUp(req.body.exercise_selection_id).then(resMessage => {
-//             res.json(resMessage)
-//         })
-//     })
+router.route("/up")
+    .post((req, res) => {
+        moveSetUp(req.body.set_id).then(resMessage => {
+            res.json(resMessage)
+        })
+    })
 
-// router.route("/down")
-//     .post((req, res) => {
-//         moveExerciseDown(req.body.exercise_selection_id).then(resMessage => {
-//             res.json(resMessage)
-//         })
-//     })
+router.route("/down")
+    .post((req, res) => {
+        moveSetDown(req.body.set_id).then(resMessage => {
+            res.json(resMessage)
+        })
+    })
 
 router.route("/")
     .get((req, res) => {

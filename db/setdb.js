@@ -32,12 +32,25 @@ async function getSetsForExercise(exercise_selection_id){
     return {success: true, sets: sets}
 }
 
+async function orderSetsBySetId(set_id){
+
+    const results = await runQuery(`SELECT * FROM exerciseset WHERE uid = $1`, [set_id])
+
+    if (!results || results.length === 0){
+        return {success: false, message: "could not find set id"}
+    }
+
+    const exercise_selection_id = results[0].workout_exercise_id
+
+    return orderSets(exercise_selection_id)
+}
+
 
 async function orderSets(exercise_selection_id){
     const getSetsResult = await getSetsForExercise(exercise_selection_id)
 
     if (getSetsResult.success == false){
-        return {sets}
+        return getSetsResult
     }
 
     if(getSetsResult.error){
@@ -75,78 +88,70 @@ async function deleteSet(set_id){
 
 }
 
-module.exports = { insertSet, getSetsForExercise, deleteSet };
+async function moveSetUp(set_id){
+    //always make sure that our sets are in order before changing 
+    const data =  await orderSetsBySetId(set_id)
+    if(data.success !== true){
+        console.log("return move exercise up fail")
+        return data //return error object if there was some failure
+    }
 
+    console.log("length: " + data.sets.length)
 
-// async function getExerciseByExerciseSelectionID(exercise_selection_id){
-//     return await runQuery(`SELECT * FROM public.workoutexerciseselection WHERE uid = $1`, [exercise_selection_id])
-// }
-
-// async function moveExerciseUp(exercise_selection_id){
-//     console.log(exercise_selection_id)
-//     //always make sure that our exercises are in order before changing 
-//     const data =  await orderExercises(exercise_selection_id)
-//     if(data.success !== true){
-//         console.log("return move exercise up fail")
-//         return data //return error object if there was some failure
-//     }
-
-//     console.log("length: " + data.exercises.length)
-
-//     for(let i = 0; i < data.exercises.length; i++){
-//         const exercise = data.exercises[i]
-//         console.log(JSON.stringify(exercise))
-//         if (exercise.workout_selection_id == exercise_selection_id){
-//             console.log("found match")
-//             if (i === 0) {
-//                 return {success: true, message:"already first exercise"}
-//             }
-//             //switch entries
-//             //first move entry up
-//             let success = await runQuery("UPDATE workoutexerciseselection SET index_order = $1 where uid = $2;", [i - 1, exercise.workout_selection_id])
-//             if (!success){
-//                 return {success: false, message: "cant update exercise selection: " + exercise.workout_selection_id}
-//             }
-//             //move second entry down
-//             success = await runQuery("UPDATE workoutexerciseselection SET index_order = $1 where uid = $2;", [i, data.exercises[i - 1].workout_selection_id])
-//             if (!success){
-//                 return {success: false, message: "cant update exercise selection: " + exercise.workout_selection_id}
-//             }
-//             return {success: true}
-//         }
-//     }
+    for(let i = 0; i < data.sets.length; i++){
+        const set = data.sets[i]
+        console.log(JSON.stringify(set))
+        if (set.uid == set_id){
+            console.log("found match")
+            if (i === 0) {
+                return {success: true, message:"already first exercise"}
+            }
+            //switch entries
+            //first move entry up
+            let success = await runQuery("UPDATE exerciseset SET index_order = $1 where uid = $2;", [i - 1, set.uid])
+            if (!success){
+                return {success: false, message: "cant update exercise selection: " + set.uid}
+            }
+            //move second entry down
+            success = await runQuery("UPDATE exerciseset SET index_order = $1 where uid = $2;", [i, data.sets[i - 1].uid])
+            if (!success){
+                return {success: false, message: "cant update exercise selection: " + set.uid}
+            }
+            return {success: true}
+        }
+    }
     
-//     return {success: false, message: "invalid exercise id"}
-// }
+    return {success: false, message: "invalid set id"}
+}
 
-// async function moveExerciseDown(exercise_id){
-//     const data =  await orderExercises(exercise_id)
-//     if(data.success !== true){
-//         console.log("return move exercise down fail")
-//         return data //return error object if there was some failure
-//     }
+async function moveSetDown(set_id){
+    const data =  await orderSetsBySetId(set_id)
+    if(data.success !== true){
+        console.log("return move exercise up fail")
+        return data //return error object if there was some failure
+    }
 
-//     for(let i = 0; i < data.exercises.length - 1; i++){
-//         const exercise = data.exercises[i]
-//         if (exercise.workout_selection_id == exercise_id){
-//             // if (exercise.index_order === data.exercises.length - 1) {
-//             //     return {success: true, message:"already last exercise"}
-//             // }
-//             //switch entries
-//             //first move entry down
-//             let success = await runQuery("UPDATE workoutexerciseselection SET index_order = $1 where uid = $2;", [i + 1, exercise.workout_selection_id])
-//             if (!success){
-//                 return {success: false, message: "cant update exercise selection: " + exercise.workout_selection_id}
-//             }
-//             //move second entry up
-//             success = await runQuery("UPDATE workoutexerciseselection SET index_order = $1 where uid = $2;", [i, data.exercises[i + 1].workout_selection_id])
-//             if (!success){
-//                 return {success: false, message: "cant update exercise selection: " + exercise.workout_selection_id}
-//             }
-//             return {success: true}
-//         }
-//     }
-//     return {success: true, message:"already last exercise"}
+    console.log("length: " + data.sets.length)
+
+    for(let i = 0; i < data.sets.length - 1; i++){
+        const set = data.sets[i]
+        if (set.uid == set_id){
+            let success = await runQuery("UPDATE exerciseset SET index_order = $1 where uid = $2;", [i + 1, set.uid])
+            if (!success){
+                return {success: false, message: "cant update exercise selection: " + set.uid}
+            }
+            //move second entry up
+            success = await runQuery("UPDATE exerciseset SET index_order = $1 where uid = $2;", [i, data.sets[i + 1].uid])
+            if (!success){
+                return {success: false, message: "cant update exercise selection: " + set.uid}
+            }
+            return {success: true}
+        }
+    }
+    return {success: true, message:"already last set"}
    
-//     // return {success: false, message: "invalid exercise id"}
-// }
+    // return {success: false, message: "invalid exercise id"}
+}
+
+module.exports = { insertSet, getSetsForExercise, deleteSet, moveSetUp, moveSetDown};
+
