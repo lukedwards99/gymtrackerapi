@@ -6,9 +6,13 @@ async function getWorkouts() {
 }
 
 async function getWorkout(id) {
-    const excerciseData = await runQuery(CONSTANTS.getWorkoutandExercise_sql, [id])
+    //const excerciseData = await runQuery(CONSTANTS.getWorkoutandExercise_sql, [id])
     const workoutData = await runQuery(CONSTANTS.getWorkout_sql, [id])
-    return reduceWorkouts(excerciseData, workoutData)
+    if(!workoutData) {
+        return {success: false, message: "couldnt run workout query"}
+    }
+    //return reduceWorkouts(excerciseData, workoutData)
+    return {success: true, workoutData: workoutData[0]}
 }
 
 async function getWorkoutTypes() {
@@ -38,36 +42,36 @@ async function putWorkoutType(name){
     return {success: success ? true : false}
 }
 
-function reduceWorkouts(exerciseData, workoutData){
-    if(workoutData === null || workoutData.length === 0){
-        return {success: false, msg: "No workout found"}
-    }
+// function reduceWorkouts(exerciseData, workoutData){
+//     if(workoutData === null || workoutData.length === 0){
+//         return {success: false, msg: "No workout found"}
+//     }
 
-    let workout = {
-        id: workoutData[0].workout_id,
-        time: workoutData[0].workout_time,
-        title: workoutData[0].workout_title,
-        dayName: workoutData[0].day_name,
-        dayNameID: workoutData[0].workout_type_id,
-        dayNumber: workoutData[0].day_number,
-        exercises: []
-    }
+//     let workout = {
+//         id: workoutData[0].workout_id,
+//         time: workoutData[0].workout_time,
+//         title: workoutData[0].workout_title,
+//         dayName: workoutData[0].day_name,
+//         dayNameID: workoutData[0].workout_type_id,
+//         dayNumber: workoutData[0].day_number,
+//         exercises: []
+//     }
 
-    for (let i = 0; i < exerciseData.length; i++) {
-        const exercise = exerciseData[i];
-        workout.exercises.push({
-            name: exercise.category_name,
-            manufacturer: exercise.manufacturer,
-            reps: exercise.reps,
-            difficultyScore: exercise.difficulty_score,
-            simulationScore: exercise.perceived_stimulation_score,
-            order: exercise.workout_order,
-            comments: exercise.comments,
-            uid: exercise.uid
-        })
-    }
-    return workout
-}
+//     for (let i = 0; i < exerciseData.length; i++) {
+//         const exercise = exerciseData[i];
+//         workout.exercises.push({
+//             name: exercise.category_name,
+//             manufacturer: exercise.manufacturer,
+//             reps: exercise.reps,
+//             difficultyScore: exercise.difficulty_score,
+//             simulationScore: exercise.perceived_stimulation_score,
+//             order: exercise.workout_order,
+//             comments: exercise.comments,
+//             uid: exercise.uid
+//         })
+//     }
+//     return workout
+// }
 
 async function insertWorkout(time, title, typeId, dayNumber){
     if (time === null || time.trim() == ""){

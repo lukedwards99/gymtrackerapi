@@ -48,8 +48,8 @@ router.route("/")
 
 router.route("/:id")
     .get((req, res) => {
-        getWorkout(req.params.id).then(workout => {
-            res.json(workout)
+        getWorkout(req.params.id).then(result => {
+            res.json(result)
         })
     })
     .patch((req, res) => {

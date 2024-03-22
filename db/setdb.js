@@ -10,7 +10,7 @@ async function insertSet(exercise_selection_id, reps, difficulty_score, perceive
     }
     console.log(JSON.stringify(orderSetsResult))
 
-    const index_order = orderSetsResult.sets[orderSetsResult.sets.length - 1].index_order + 1
+    let index_order =  orderSetsResult.sets.length //set new index order to length so it is indexed correctly
 
     console.log("index order " + index_order)
 
@@ -28,6 +28,10 @@ async function getSetsForExercise(exercise_selection_id){
     const sets = 
         await runQuery(`SELECT uid, workout_exercise_id, reps, difficulty_score, perceived_stimulation_score, index_order
         FROM exerciseset WHERE workout_exercise_id = $1`, [exercise_selection_id])
+    
+    if(!sets){
+        return {success: false, message: "could not run exerciseset query"}
+    }
 
     return {success: true, sets: sets}
 }
@@ -42,12 +46,13 @@ async function orderSetsBySetId(set_id){
 
     const exercise_selection_id = results[0].workout_exercise_id
 
-    return orderSets(exercise_selection_id)
+    return await orderSets(exercise_selection_id)
 }
 
 
 async function orderSets(exercise_selection_id){
     const getSetsResult = await getSetsForExercise(exercise_selection_id)
+    console.log(JSON.stringify(getSetsResult))
 
     if (getSetsResult.success == false){
         return getSetsResult
@@ -58,6 +63,10 @@ async function orderSets(exercise_selection_id){
     }
 
     let sets = getSetsResult.sets
+    if (sets.length == 0){
+        console.log("no sets to order")
+        return {success: true, sets: []}
+    }
 
     console.log("sets: " + JSON.stringify(sets))
     sets.sort((a, b) => a.index_order - b.index_order)

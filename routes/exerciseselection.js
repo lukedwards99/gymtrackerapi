@@ -17,21 +17,19 @@ router.route("/down")
     })
 
 // TODO REMOVE THE ID AND MOVE TO BODY
-router.route("/:id")
+router.route("/")
     .get((req, res) => {
-        getExercisesForWorkout(req.params.id).then(exercises => {
-            res.json(exercises)
+        getExercisesForWorkout(req.body.workout_id).then(result => {
+            res.json(result)
         })
     })
     .put((req, res) => {
         body = req.body
-        insertExercises(req.params.id, body.exercise_name_id, body.order)
+        insertExercises(body.workout_id, body.exercise_name_id, body.order)
         .then(success => {
             res.json({success: success ? true : false})
         })
     })
-
-router.route("/")
     .delete((req, res) => {
         body = req.body
         removeExercise(body.exercise_selection_id)

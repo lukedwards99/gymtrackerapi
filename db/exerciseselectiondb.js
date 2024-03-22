@@ -3,7 +3,9 @@ const {CONSTANTS} = require("../common/constants")
 const {orderTable} = require("../common/util")
 
 async function insertExercises(workoutID, exerciseNameID, order){
-    debugger
+    if (order == null){
+        order = 999 //TODO: should just place at end. But setting order high works too
+    }
     return await runQuery(CONSTANTS.insertExercise_sql, [workoutID, exerciseNameID, order])
 }
 
@@ -22,7 +24,7 @@ async function getExercisesForWorkout(workoutID){
             JOIN exercisecategory EC on EC.uid = WES.exercise_name_id
             WHERE W.uid = $1;`, [workoutID])
 
-    return exercises
+    return {success: true, exercises: exercises}
 }
 
 async function getExerciseByExerciseSelectionID(exercise_selection_id){
