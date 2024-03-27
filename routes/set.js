@@ -16,12 +16,14 @@ router.route("/down")
         })
     })
 
-router.route("/")
+router.route("/:id")
     .get((req, res) => {
-        getSetsForExercise(req.body.exercise_selection_id).then(sets => {
+        getSetsForExercise(req.params.id).then(sets => {
             res.json(sets)
         })
     })
+
+router.route("/")
     .put((req, res) => {
         const body = req.body
         insertSet(body.exercise_selection_id, body.reps, body.difficulty_score, body.stimulation_score)

@@ -16,13 +16,16 @@ router.route("/down")
         })
     })
 
-// TODO REMOVE THE ID AND MOVE TO BODY
-router.route("/")
+router.route("/:id")
     .get((req, res) => {
-        getExercisesForWorkout(req.body.workout_id).then(result => {
+        // console.log("workout_id: " + req.body.workout_id)
+        getExercisesForWorkout(req.params.id).then(result => {
+            console.log(JSON.stringify(result))
             res.json(result)
         })
     })
+// TODO REMOVE THE ID AND MOVE TO BODY
+router.route("/")
     .put((req, res) => {
         body = req.body
         insertExercises(body.workout_id, body.exercise_name_id, body.order)
