@@ -92,12 +92,42 @@ async function deleteWorkout(uid){
 }
 
 async function patchWorkout(uid, time, title, typeId, dayNumber){
-    if (time.trim() == ""){
-        time = null
+
+    const getWorkoutResult = await getWorkout(uid)
+    const workoutDetails = getWorkoutResult.workoutData
+    console.log(JSON.stringify(workoutDetails))
+
+    if (workoutDetails === null || workoutDetails === false){
+        return {success: false, message: "unable to get workout details"}
     }
-    if(dayNumber == null){
-        dayNumber = 0
+
+    //if ()
+
+    try {
+        workoutDetails.workout_time = (new Date(time)).toISOString()    
+    }catch(e){
+        console.log(`Time conversion error: "${e}"`)
+        workoutDetails.workout_time = Date.now.toISOString()    
     }
+
+    if (typeof title === "string"){
+        workoutDetails.workout_title = title
+    }
+
+    if (typeId){}
+
+    // console.log((new Date(time)).toISOString())
+
+    // if (time != null && null != (new Date(time))){
+    //     // workoutDetails
+    // }
+
+    // if (time.trim() == ""){
+    //     time = null
+    // }
+    // if(dayNumber == null){
+    //     dayNumber = 0
+    // }
     const success = await runQuery(`UPDATE workout SET workout_title = $1, workout_time = $2, workouttype_id = $3, day_number = $4 WHERE uid = $5;`, [title, time, typeId, dayNumber, uid])
     if(!success){
         console.error("Error updating workout with id: " + uid)

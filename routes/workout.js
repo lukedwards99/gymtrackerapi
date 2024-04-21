@@ -2,25 +2,36 @@ const express = require("express")
 const router = express.Router()
 const logger = require("../common/logging")
 const {getWorkouts, getWorkout, insertWorkout, getWorkoutTypes, putWorkoutType, deleteWorkoutType, deleteWorkout, getWorkoutTypesActive, patchWorkout } = require("../db/workoutdb")
+const { body, matchedData, validationResult } = require('express-validator');
+
+const putWorkoutValidator = () => 
 
 router.route('/type/active')
-    .get((req, res) => {
+    .get((req, res) => { // no input so no need for validation
         getWorkoutTypesActive().then(workoutsTypes => {
             res.json(workoutsTypes)
         })
     })
 
 router.route("/type")
-    .get((req, res) => {
+    .get((req, res) => { //no input
         getWorkoutTypes().then(workoutsTypes => {
             res.json(workoutsTypes)
         })
     })
-    .put((req, res) => {
-        putWorkoutType(req.body.name).then(returnObject => {
-            res.json(returnObject)
-        })
-    })
+    .put(body("name").trim().notEmpty().escape(),
+        (req, res) => {
+            const result = validationResult(req);
+            if (!result.isEmpty()) {
+                res.send({ success:false, errors: result.array() });
+            }
+            const data = matchedData(req);
+            // console.log(JSON.stringify(data))
+            putWorkoutType(data.name).then(returnObject => {
+                res.json(returnObject)
+            })
+        }
+    )
     .delete((req, res) => {
         deleteWorkoutType(req.body.workout_type_id).then(success => {
             res.json({success: success ? true : false})
